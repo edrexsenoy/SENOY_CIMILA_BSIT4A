@@ -19,8 +19,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__ . '/auth.php';
-
 
 // Item routes
 Route::get('/items', [ItemController::class, 'index'])->name('items');
@@ -30,3 +28,21 @@ Route::get('/items/view/{id}', [ItemController::class, 'view'])->name('items.vie
 Route::delete('/items/delete/{id}', [ItemController::class, 'delete'])->name('items.delete');
 Route::get('/items/edit/{id}', [ItemController::class, 'edit'])->name('items.edit');
 Route::post('/items/update/{id}', [ItemController::class, 'update'])->name('items.update');
+
+
+Route::get('/notauth', function () {
+    return view('notauth.index');
+})->name('notauth');
+
+Route::get('/user', function () {
+    return view('user.index');
+})->middleware(['auth', 'role:user'])->name('user');
+
+Route::get('/admin', function () {
+    return view('admin.index');
+})->middleware(['auth', 'role:admin'])->name('admin');
+
+
+
+
+require __DIR__ . '/auth.php';
