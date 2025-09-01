@@ -24,7 +24,8 @@ class RoleMiddleware
         }
 
         if ($role === 'admin' && $request->user() && $request->user()->roles !== 'admin') {
-            return redirect()->route('admin');
+            // Fixed: Changed from route('admin') to route('admin.index')
+            return redirect()->route('admin.index');
         }
 
         return $next($request);
