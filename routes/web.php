@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserItemController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ItemController;
 
@@ -9,15 +10,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// ADD THESE MISSING ROUTES
-Route::get('/admin', function () {
-    return redirect()->route('admin.index');
-})->name('admin');
-
-// Fixed: Use UserController to handle the admin index route
+//* Fixed: Use UserController to handle the admin index route*
 Route::get('/admin/index', [UserController::class, 'index'])
     ->middleware(['auth', 'role:admin'])
     ->name('admin.index');
+
+// ✅ FIXED: Added a closure to return the dashboard view.
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'role:user'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -25,54 +26,43 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Item routes
-Route::get('/items', [ItemController::class, 'index'])->name('items');
-Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
-Route::post('/items/store', [ItemController::class, 'store'])->name('items.store');
-Route::get('/items/view/{id}', [ItemController::class, 'view'])->name('items.view');
-Route::delete('/items/delete/{id}', [ItemController::class, 'delete'])->name('items.delete');
-Route::get('/items/edit/{id}', [ItemController::class, 'edit'])->name('items.edit');
-Route::post('/items/update/{id}', [ItemController::class, 'update'])->name('items.update');
+//* ✅ ADMIN Item routes (using ItemController)*
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/items/index', [ItemController::class, 'index'])->name('admin.items.index');
+    Route::get('/admin/items/create', [ItemController::class, 'create'])->name('admin.items.create');
+    Route::post('/admin/items/store', [ItemController::class, 'store'])->name('admin.items.store');
+    Route::get('/admin/items/view/{id}', [ItemController::class, 'view'])->name('admin.items.view');
+    Route::delete('/admin/items/delete/{id}', [ItemController::class, 'delete'])->name('admin.items.delete');
+    Route::get('/admin/items/edit/{id}', [ItemController::class, 'edit'])->name('admin.items.edit');
+    Route::post('/admin/items/update/{id}', [ItemController::class, 'update'])->name('admin.items.update');
+});
 
-// User management routes
-// web.php
+//* ✅ USER Item routes (using UserItemController)*
+Route::middleware(['auth', 'role:user'])->group(function () {
+    Route::get('/user/items/index', [UserItemController::class, 'index'])->name('user.items.index');
+    Route::get('/user/items/create', [UserItemController::class, 'create'])->name('user.items.create');
+    Route::post('/user/items/store', [UserItemController::class, 'store'])->name('user.items.store');
+    Route::get('/user/items/view/{id}', [UserItemController::class, 'view'])->name('user.items.view');
+    Route::delete('/user/items/delete/{id}', [UserItemController::class, 'delete'])->name('user.items.delete');
+    Route::get('/user/items/edit/{id}', [UserItemController::class, 'edit'])->name('user.items.edit');
+    Route::post('/user/items/update/{id}', [UserItemController::class, 'update'])->name('user.items.update');
+});
 
-// ... other routes
 
-// User management routes
-// CHANGED: All instances of {id} are now {user}
-Route::delete('/users/delete/{user}', [UserController::class, 'delete'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('users.delete');
-Route::get('/users/edit/{user}', [UserController::class, 'edit'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('users.edit');
-Route::post('/users/update/{user}', [UserController::class, 'update'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('users.update');
-Route::get('/users/view/{user}', [UserController::class, 'view'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('users.view');
+//* ✅ User management routes*
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::delete('/users/delete/{user}', [UserController::class, 'delete'])->name('users.delete');
+    Route::get('/users/edit/{user}', [UserController::class, 'edit'])->name('users.edit');
+    Route::post('/users/update/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::get('/users/view/{user}', [UserController::class, 'view'])->name('users.view');
+    Route::get('/users/{user}/change-password', [UserController::class, 'showChangePasswordForm'])->name('admin.changePasswordForm');
+    Route::post('/users/{user}/change-password', [UserController::class, 'updatePassword'])->name('admin.updatePassword');
+});
 
-// ... other routes
 
-// Make sure your user parameter name matches the variable in the controller method
-Route::get('/users/{user}/change-password', [UserController::class, 'showChangePasswordForm'])->name('admin.changePasswordForm');
-Route::post('/users/{user}/change-password', [UserController::class, 'updatePassword'])->name('admin.updatePassword');
-
-// MIDDLEWARES
+//* ✅ Middlewares*
 Route::get('/notauth', function () {
     return view('notauth.index');
 })->name('notauth');
-
-// AUTH ROLES - Dashboard is the user route
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'role:user'])->name('user');
-
-// ADMIN
-Route::get('/admin/items', function () {
-    return view('admin.items.index');
-});
 
 require __DIR__ . '/auth.php';

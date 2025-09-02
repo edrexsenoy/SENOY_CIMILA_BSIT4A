@@ -10,7 +10,7 @@
 
             <div class="sb-sidenav-menu-heading">Model</div>
 
-            <a class="nav-link" href="{{ url('admin/items')}}">
+            <a class="nav-link" href="{{ url('admin/items/index')}}">
                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                 Items
             </a>

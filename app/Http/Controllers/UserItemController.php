@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Items;
 use Illuminate\Http\Request;
 
-class ItemController extends Controller
+
+class UserItemController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,7 +14,7 @@ class ItemController extends Controller
     public function index()
     {
         $items = Items::all(); // Fetch all data from the items table
-        return view('admin.items.index', compact('items'));
+        return view('user.items.index', compact('items'));
         // Make sure your view file is: resources/views/items.blade.php
     }
 
@@ -22,7 +23,7 @@ class ItemController extends Controller
      */
     public function create()
     {
-        return view('admin.items.create');
+        return view('user.items.create');
         // resources/views/create.blade.php
     }
 
@@ -40,39 +41,33 @@ class ItemController extends Controller
             'updated_at'  => now()
         ]);
 
-        return redirect()->route('admin.items.index');
+        return redirect()->route('user.items.index');
         // Make sure you defined a route name "items" in web.php
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Items $items)
+    public function show(string $id)
     {
-        //
+        Items::destroy($id); // DELETE FROM `items` WHERE `id` = $id
+        return redirect()->route('user.items.delete');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-
-    public function delete($id)
-    {
-        Items::destroy($id); // DELETE FROM `items` WHERE `id` = $id
-        return redirect()->route('admin.items.delete');
-    }
-
-    public function edit($id)
+    public function edit(string $id)
     {
         $item = Items::find($id); // SELECT * FROM items WHERE id = $id
-        return view('admin.items.edit', compact('item'));
+        return view('user.items.edit', compact('item'));
         // resources/views/edit.blade.php
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, string $id)
     {
         Items::where('id', $id)->update([
             'name'        => $request->name,
@@ -82,25 +77,22 @@ class ItemController extends Controller
             'updated_at'  => now(),
         ]);
 
-        return redirect()->route('admin.items.index');
+        return redirect()->route('user.items.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(string $id)
     {
         Items::destroy($id);
-        return redirect()->route('admin.items.index');
+        return redirect()->route('user.items.index');
     }
 
-    /**
-     * Custom view for showing a single item (not using resource show()).
-     */
     public function view($id)
     {
         $item = Items::find($id); // SELECT * FROM items WHERE id = $id
-        return view('admin.items.view', compact('item'));
+        return view('user.items.view', compact('item'));
         // resources/views/item_view.blade.php
     }
 }

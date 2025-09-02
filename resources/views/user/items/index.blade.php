@@ -1,19 +1,19 @@
-@extends('layouts.admin')
+@extends('layouts.user')
 
 @section('content')
 
 <body>
     <div class="panel panel-default">
         <!-- Default panel contents -->
-        <div class="mt-4 h1 fw-semibold">Items</div>
-        <div class=" panel-body">
+        <div class="panel-heading">ITEMS</div>
+        <div class="panel-body">
             <p></p>
         </div>
 
         <div class="container">
             <div class="row">
                 <div class="col">
-                    <a href="{{ route('admin.items.create') }}" class="btn btn-primary">Create</a>
+                    <a href="{{ route('user.items.create') }}" class="btn btn-primary">Create</a>
                 </div>
             </div>
 
@@ -44,13 +44,13 @@
                     <td>{{$item->created_at}}</td>
                     <td>{{$item->updated_at}}</td>
                     <td>
-                        <a href="{{ route('admin.items.view', $item->id) }}" class="btn btn-warning btn-sm">
+                        <a href="{{ route('user.items.view', $item->id) }}" class="btn btn-warning btn-sm">
                             View
                         </a>
-                        <a href="{{ route('admin.items.edit', $item->id) }}" class="btn btn-success btn-sm">
+                        <a href="{{ route('user.items.edit', $item->id) }}" class="btn btn-success btn-sm">
                             Edit
                         </a>
-                        <form action="{{ route('admin.items.delete', $item->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Remove item?')">
+                        <form action="{{ route('user.items.delete', $item->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Remove item?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">
